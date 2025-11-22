@@ -1,16 +1,12 @@
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
-
 from app.core.config import settings
-
 
 class Base(DeclarativeBase):
     pass
 
-
 class DatabaseConnector:
-
     def __init__(self, database_url: str):
         self.database_url = database_url
 
@@ -31,10 +27,6 @@ class DatabaseConnector:
             autoflush=False,
         )
 
-    async def init_db(self) -> None:
-        async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
     async def close_db(self) -> None:
         await self.engine.dispose()
 
@@ -44,4 +36,6 @@ class DatabaseConnector:
                 yield session
             finally:
                 await session.close()
+
+
 db = DatabaseConnector(database_url=settings.database_url)
